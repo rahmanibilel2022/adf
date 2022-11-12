@@ -1,0 +1,49 @@
+{
+	"name": "Pipleline_Delete_Files",
+	"properties": {
+		"activities": [
+			{
+				"name": "Supprimer txt",
+				"type": "Delete",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "SupprimerFichier",
+						"value": "Supprimer les fichiers texte de conteneur txt"
+					}
+				],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "Input_DATASource",
+						"type": "DatasetReference"
+					},
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "LinkedService_BlobStorage",
+							"type": "LinkedServiceReference"
+						},
+						"path": ""
+					},
+					"enableLogging": true,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": false,
+						"modifiedDatetimeStart": "2022-10-24T00:00:00.046Z",
+						"wildcardFileName": "*.txt",
+						"enablePartitionDiscovery": false
+					}
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2022-11-04T16:32:53Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

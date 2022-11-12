@@ -1,0 +1,9 @@
+{
+	"name": "FirstDataFactory2022",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "dedb3e91-072b-4022-a525-76b12829fcb6",
+		"tenantId": "49c5d20b-0000-41c3-bb7f-784de490d02e"
+	}
+}

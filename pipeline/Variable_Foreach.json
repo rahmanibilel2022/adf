@@ -1,0 +1,51 @@
+{
+	"name": "Variable_Foreach",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('MonthList')",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Set variable1",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Month",
+								"value": {
+									"value": "@item()",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"MonthList": {
+				"type": "Array",
+				"defaultValue": [
+					"Janvier",
+					"Fevrier",
+					"Mars"
+				]
+			},
+			"Month": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-11-05T00:44:13Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
