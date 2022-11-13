@@ -1,0 +1,61 @@
+{
+	"name": "Join_Empl_Dep_GroupBy",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "InputListeEmployes",
+						"type": "DatasetReference"
+					},
+					"name": "ListeEmployes"
+				},
+				{
+					"dataset": {
+						"referenceName": "InoutListeDepartements",
+						"type": "DatasetReference"
+					},
+					"name": "ListeDepartements"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "GroupByDepart"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id as string,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          gender as string,",
+				"          departement as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ListeEmployes",
+				"source(output(",
+				"          iddep as string,",
+				"          NomDepartement as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ListeDepartements",
+				"ListeEmployes, ListeDepartements join(departement == iddep,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 aggregate(groupBy(iddep),",
+				"     iddep = iddep,",
+				"          NomDepartement = NomDepartement,",
+				"          Count = count(iddep)) ~> GroupByDepart"
+			]
+		}
+	}
+}
