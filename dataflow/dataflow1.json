@@ -22,7 +22,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "OutputListeEmployes",
+						"referenceName": "OutputEployes",
 						"type": "DatasetReference"
 					},
 					"name": "sink1",
@@ -70,6 +70,8 @@
 				"          departement as string",
 				"     ),",
 				"     partitionFileNames:['LesEmployes.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
