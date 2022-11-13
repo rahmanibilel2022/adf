@@ -1075,6 +1075,102 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Join_Empl_Dep_GroupBy')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "InputListeEmployes",
+								"type": "DatasetReference"
+							},
+							"name": "ListeEmployes"
+						},
+						{
+							"dataset": {
+								"referenceName": "InoutListeDepartements",
+								"type": "DatasetReference"
+							},
+							"name": "ListeDepartements"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "TotalEmployeByDepart",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "LinkedService_BlobStorage",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						},
+						{
+							"name": "GroupByDepart"
+						},
+						{
+							"name": "Trier"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          id as string,",
+						"          first_name as string,",
+						"          last_name as string,",
+						"          gender as string,",
+						"          departement as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> ListeEmployes",
+						"source(output(",
+						"          iddep as string,",
+						"          NomDepartement as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> ListeDepartements",
+						"ListeEmployes, ListeDepartements join(departement == iddep,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 aggregate(groupBy(iddep),",
+						"     NomDepartement = first(NomDepartement),",
+						"          TotalEmployes = count(id)) ~> GroupByDepart",
+						"GroupByDepart sort(asc(iddep, true),",
+						"     caseInsensitive: true,",
+						"     partitionLevel: true) ~> Trier",
+						"Trier sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as string,",
+						"          first_name as string,",
+						"          last_name as string,",
+						"          gender as string,",
+						"          departement as string",
+						"     ),",
+						"     partitionFileNames:['TotalEmpByDepart.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/TotalEmployeByDepart')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/JointureEmpl_Dep')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1172,102 +1268,6 @@
 				}
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Join_Empl_Dep_GroupBy')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "InputListeEmployes",
-								"type": "DatasetReference"
-							},
-							"name": "ListeEmployes"
-						},
-						{
-							"dataset": {
-								"referenceName": "InoutListeDepartements",
-								"type": "DatasetReference"
-							},
-							"name": "ListeDepartements"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "TotalEmployeByDepart",
-								"type": "DatasetReference"
-							},
-							"name": "sink1",
-							"rejectedDataLinkedService": {
-								"referenceName": "LinkedService_BlobStorage",
-								"type": "LinkedServiceReference"
-							}
-						}
-					],
-					"transformations": [
-						{
-							"name": "join1"
-						},
-						{
-							"name": "GroupByDepart"
-						},
-						{
-							"name": "Trier"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          id as string,",
-						"          first_name as string,",
-						"          last_name as string,",
-						"          gender as string,",
-						"          departement as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> ListeEmployes",
-						"source(output(",
-						"          iddep as string,",
-						"          NomDepartement as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> ListeDepartements",
-						"ListeEmployes, ListeDepartements join(departement == iddep,",
-						"     joinType:'inner',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> join1",
-						"join1 aggregate(groupBy(iddep),",
-						"     NomDepartement = first(NomDepartement),",
-						"          TotalEmployes = count(id)) ~> GroupByDepart",
-						"GroupByDepart sort(asc(iddep, true),",
-						"     caseInsensitive: true,",
-						"     partitionLevel: true) ~> Trier",
-						"Trier sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          id as string,",
-						"          first_name as string,",
-						"          last_name as string,",
-						"          gender as string,",
-						"          departement as string",
-						"     ),",
-						"     partitionFileNames:['TotalEmpByDepart.csv'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/TotalEmployeByDepart')]"
-			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/pipelineEmploye')]",

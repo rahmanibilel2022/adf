@@ -1245,6 +1245,54 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_GroupBy')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Join_Empl_Dep_GroupBy",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"ListeEmployes": {},
+									"ListeDepartements": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/Join_Empl_Dep_GroupBy')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Binary1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1906,6 +1954,54 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/TotalEmployeByDepart')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LinkedService_BlobStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "output"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "id",
+						"type": "String"
+					},
+					{
+						"name": "first_name",
+						"type": "String"
+					},
+					{
+						"name": "last_name",
+						"type": "String"
+					},
+					{
+						"name": "gender",
+						"type": "String"
+					},
+					{
+						"name": "departement",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LinkedService_BlobStorage')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/LinkedService_BlobStorage')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -1917,6 +2013,105 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Join_Empl_Dep_GroupBy')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "InputListeEmployes",
+								"type": "DatasetReference"
+							},
+							"name": "ListeEmployes"
+						},
+						{
+							"dataset": {
+								"referenceName": "InoutListeDepartements",
+								"type": "DatasetReference"
+							},
+							"name": "ListeDepartements"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "TotalEmployeByDepart",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "LinkedService_BlobStorage",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						},
+						{
+							"name": "GroupByDepart"
+						},
+						{
+							"name": "Trier"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          id as string,",
+						"          first_name as string,",
+						"          last_name as string,",
+						"          gender as string,",
+						"          departement as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> ListeEmployes",
+						"source(output(",
+						"          iddep as string,",
+						"          NomDepartement as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> ListeDepartements",
+						"ListeEmployes, ListeDepartements join(departement == iddep,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 aggregate(groupBy(iddep),",
+						"     NomDepartement = first(NomDepartement),",
+						"          TotalEmployes = count(id)) ~> GroupByDepart",
+						"GroupByDepart sort(asc(iddep, true),",
+						"     caseInsensitive: true,",
+						"     partitionLevel: true) ~> Trier",
+						"Trier sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as string,",
+						"          first_name as string,",
+						"          last_name as string,",
+						"          gender as string,",
+						"          departement as string",
+						"     ),",
+						"     partitionFileNames:['TotalEmpByDepart.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/InputListeEmployes')]",
+				"[concat(variables('factoryId'), '/datasets/InoutListeDepartements')]",
+				"[concat(variables('factoryId'), '/datasets/TotalEmployeByDepart')]",
+				"[concat(variables('factoryId'), '/linkedServices/LinkedService_BlobStorage')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/JointureEmpl_Dep')]",
@@ -2020,201 +2215,6 @@
 				"[concat(variables('factoryId'), '/datasets/InoutListeDepartements')]",
 				"[concat(variables('factoryId'), '/datasets/OutputEployes')]",
 				"[concat(variables('factoryId'), '/linkedServices/LinkedService_BlobStorage')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Join_Empl_Dep_GroupBy')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "InputListeEmployes",
-								"type": "DatasetReference"
-							},
-							"name": "ListeEmployes"
-						},
-						{
-							"dataset": {
-								"referenceName": "InoutListeDepartements",
-								"type": "DatasetReference"
-							},
-							"name": "ListeDepartements"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "TotalEmployeByDepart",
-								"type": "DatasetReference"
-							},
-							"name": "sink1",
-							"rejectedDataLinkedService": {
-								"referenceName": "LinkedService_BlobStorage",
-								"type": "LinkedServiceReference"
-							}
-						}
-					],
-					"transformations": [
-						{
-							"name": "join1"
-						},
-						{
-							"name": "GroupByDepart"
-						},
-						{
-							"name": "Trier"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          id as string,",
-						"          first_name as string,",
-						"          last_name as string,",
-						"          gender as string,",
-						"          departement as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> ListeEmployes",
-						"source(output(",
-						"          iddep as string,",
-						"          NomDepartement as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> ListeDepartements",
-						"ListeEmployes, ListeDepartements join(departement == iddep,",
-						"     joinType:'inner',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> join1",
-						"join1 aggregate(groupBy(iddep),",
-						"     NomDepartement = first(NomDepartement),",
-						"          TotalEmployes = count(id)) ~> GroupByDepart",
-						"GroupByDepart sort(asc(iddep, true),",
-						"     caseInsensitive: true,",
-						"     partitionLevel: true) ~> Trier",
-						"Trier sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          id as string,",
-						"          first_name as string,",
-						"          last_name as string,",
-						"          gender as string,",
-						"          departement as string",
-						"     ),",
-						"     partitionFileNames:['TotalEmpByDepart.csv'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/InputListeEmployes')]",
-				"[concat(variables('factoryId'), '/datasets/InoutListeDepartements')]",
-				"[concat(variables('factoryId'), '/datasets/TotalEmployeByDepart')]",
-				"[concat(variables('factoryId'), '/linkedServices/LinkedService_BlobStorage')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/TotalEmployeByDepart')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LinkedService_BlobStorage",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "output"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "id",
-						"type": "String"
-					},
-					{
-						"name": "first_name",
-						"type": "String"
-					},
-					{
-						"name": "last_name",
-						"type": "String"
-					},
-					{
-						"name": "gender",
-						"type": "String"
-					},
-					{
-						"name": "departement",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LinkedService_BlobStorage')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pipeline_GroupBy')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "Join_Empl_Dep_GroupBy",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"ListeEmployes": {},
-									"ListeDepartements": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/Join_Empl_Dep_GroupBy')]"
 			]
 		}
 	]
