@@ -37,7 +37,7 @@
 					"name": "join1"
 				},
 				{
-					"name": "select1"
+					"name": "selectColonnes"
 				}
 			],
 			"scriptLines": [
@@ -71,8 +71,8 @@
 				"          NomDepartement",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectColonnes",
+				"selectColonnes sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          id as string,",
