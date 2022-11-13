@@ -38,6 +38,9 @@
 				},
 				{
 					"name": "GroupByDepart"
+				},
+				{
+					"name": "Trier"
 				}
 			],
 			"scriptLines": [
@@ -66,7 +69,10 @@
 				"join1 aggregate(groupBy(iddep),",
 				"     NomDepartement = first(NomDepartement),",
 				"          TotalEmployes = count(id)) ~> GroupByDepart",
-				"GroupByDepart sink(allowSchemaDrift: true,",
+				"GroupByDepart sort(asc(iddep, true),",
+				"     caseInsensitive: true,",
+				"     partitionLevel: true) ~> Trier",
+				"Trier sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          id as string,",
