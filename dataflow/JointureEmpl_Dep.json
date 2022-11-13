@@ -70,8 +70,13 @@
 				"          departement as string",
 				"     ),",
 				"     partitionFileNames:['LesEmployes.csv'],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          id,",
+				"          first_name,",
+				"          last_name,",
+				"          gender,",
+				"          departement",
+				"     ),",
 				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
