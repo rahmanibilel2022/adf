@@ -19,7 +19,19 @@
 					"name": "ListeDepartements"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "TotalEmployeByDepart",
+						"type": "DatasetReference"
+					},
+					"name": "sink1",
+					"rejectedDataLinkedService": {
+						"referenceName": "LinkedService_BlobStorage",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
 			"transformations": [
 				{
 					"name": "join1"
@@ -52,9 +64,21 @@
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
 				"join1 aggregate(groupBy(iddep),",
-				"     iddep = iddep,",
-				"          NomDepartement = NomDepartement,",
-				"          Count = count(iddep)) ~> GroupByDepart"
+				"     NomDepartement = first(NomDepartement),",
+				"          TotalEmployes = count(id)) ~> GroupByDepart",
+				"GroupByDepart sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as string,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          gender as string,",
+				"          departement as string",
+				"     ),",
+				"     partitionFileNames:['TotalEmpByDepart.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
 	}
