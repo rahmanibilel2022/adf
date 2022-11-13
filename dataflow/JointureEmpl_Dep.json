@@ -1,5 +1,5 @@
 {
-	"name": "dataflow1",
+	"name": "JointureEmpl_Dep",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
