@@ -185,6 +185,9 @@
 				"type": "String"
 			}
 		},
+		"folder": {
+			"name": "Basic pipeline"
+		},
 		"annotations": [],
 		"lastPublishTime": "2022-11-05T16:45:36Z"
 	},

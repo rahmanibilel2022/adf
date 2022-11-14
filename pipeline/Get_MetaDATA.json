@@ -91,6 +91,9 @@
 				]
 			}
 		},
+		"folder": {
+			"name": "Basic pipeline"
+		},
 		"annotations": [],
 		"lastPublishTime": "2022-11-04T17:25:30Z"
 	},
