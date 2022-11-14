@@ -166,6 +166,9 @@
 						]
 					}
 				},
+				"folder": {
+					"name": "Basic pipeline"
+				},
 				"annotations": [],
 				"lastPublishTime": "2022-11-03T17:23:56Z"
 			},
@@ -270,6 +273,9 @@
 							"txt"
 						]
 					}
+				},
+				"folder": {
+					"name": "Basic pipeline"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-11-04T17:25:30Z"
@@ -472,6 +478,9 @@
 						"type": "String"
 					}
 				},
+				"folder": {
+					"name": "Basic pipeline"
+				},
 				"annotations": [],
 				"lastPublishTime": "2022-11-05T16:45:36Z"
 			},
@@ -611,6 +620,9 @@
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
+				"folder": {
+					"name": "Basic pipeline"
+				},
 				"annotations": [],
 				"lastPublishTime": "2022-11-04T22:11:55Z"
 			},
@@ -699,6 +711,9 @@
 						"type": "String"
 					}
 				},
+				"folder": {
+					"name": "Basic pipeline"
+				},
 				"annotations": [],
 				"lastPublishTime": "2022-11-06T21:12:56Z"
 			},
@@ -754,6 +769,9 @@
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Basic pipeline"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-11-04T16:32:53Z"
@@ -833,6 +851,9 @@
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Basic pipeline"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-11-04T21:16:27Z"
@@ -996,6 +1017,9 @@
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
+				"folder": {
+					"name": "Basic pipeline"
+				},
 				"annotations": [],
 				"lastPublishTime": "2022-10-24T13:53:28Z"
 			},
@@ -1066,6 +1090,9 @@
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Basic pipeline"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-11-03T14:59:00Z"
@@ -1270,6 +1297,260 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/JointureEmpl_Dep_CondionalSplit')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "InputListeEmployes",
+								"type": "DatasetReference"
+							},
+							"name": "ListeEmployes"
+						},
+						{
+							"dataset": {
+								"referenceName": "InoutListeDepartements",
+								"type": "DatasetReference"
+							},
+							"name": "ListeDepartements"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "OutputEployes",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "LinkedService_BlobStorage",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "OutputEployes",
+								"type": "DatasetReference"
+							},
+							"name": "sink2",
+							"rejectedDataLinkedService": {
+								"referenceName": "LinkedService_BlobStorage",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "OutputEployes",
+								"type": "DatasetReference"
+							},
+							"name": "sink3",
+							"rejectedDataLinkedService": {
+								"referenceName": "LinkedService_BlobStorage",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "OutputEployes",
+								"type": "DatasetReference"
+							},
+							"name": "sink4",
+							"rejectedDataLinkedService": {
+								"referenceName": "LinkedService_BlobStorage",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "OutputEployes",
+								"type": "DatasetReference"
+							},
+							"name": "sink5",
+							"rejectedDataLinkedService": {
+								"referenceName": "LinkedService_BlobStorage",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "OutputEployes",
+								"type": "DatasetReference"
+							},
+							"name": "sink6",
+							"rejectedDataLinkedService": {
+								"referenceName": "LinkedService_BlobStorage",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "OutputEployes",
+								"type": "DatasetReference"
+							},
+							"name": "sink7",
+							"rejectedDataLinkedService": {
+								"referenceName": "LinkedService_BlobStorage",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						},
+						{
+							"name": "selectColonnes"
+						},
+						{
+							"name": "split1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          id as string,",
+						"          first_name as string,",
+						"          last_name as string,",
+						"          gender as string,",
+						"          departement as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> ListeEmployes",
+						"source(output(",
+						"          iddep as string,",
+						"          NomDepartement as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> ListeDepartements",
+						"ListeEmployes, ListeDepartements join(departement == iddep,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 select(mapColumn(",
+						"          id,",
+						"          first_name,",
+						"          last_name,",
+						"          gender,",
+						"          iddep,",
+						"          departement = NomDepartement",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectColonnes",
+						"selectColonnes split(equals(iddep,'1'),",
+						"     equals(iddep,'2'),",
+						"     equals(iddep,'3'),",
+						"     equals(iddep,'4'),",
+						"     equals(iddep,'5'),",
+						"     equals(iddep,'6'),",
+						"     disjoint: false) ~> split1@(Informatique, Comptabilite, Marketing, Finance, RH, Reseau, Autres)",
+						"split1@Informatique sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as string,",
+						"          first_name as string,",
+						"          last_name as string,",
+						"          gender as string,",
+						"          departement as string",
+						"     ),",
+						"     partitionFileNames:['Informatique.csv'],",
+						"     mapColumn(",
+						"          id,",
+						"          first_name,",
+						"          last_name,",
+						"          gender,",
+						"          departement",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> sink1",
+						"split1@Comptabilite sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as string,",
+						"          first_name as string,",
+						"          last_name as string,",
+						"          gender as string,",
+						"          departement as string",
+						"     ),",
+						"     partitionFileNames:['Comptabilite.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink2",
+						"split1@Marketing sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as string,",
+						"          first_name as string,",
+						"          last_name as string,",
+						"          gender as string,",
+						"          departement as string",
+						"     ),",
+						"     partitionFileNames:['Marketing.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink3",
+						"split1@Finance sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as string,",
+						"          first_name as string,",
+						"          last_name as string,",
+						"          gender as string,",
+						"          departement as string",
+						"     ),",
+						"     partitionFileNames:['Finance'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink4",
+						"split1@RH sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as string,",
+						"          first_name as string,",
+						"          last_name as string,",
+						"          gender as string,",
+						"          departement as string",
+						"     ),",
+						"     partitionFileNames:['RH.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink5",
+						"split1@Reseau sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as string,",
+						"          first_name as string,",
+						"          last_name as string,",
+						"          gender as string,",
+						"          departement as string",
+						"     ),",
+						"     partitionFileNames:['Reseau.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink6",
+						"split1@Autres sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as string,",
+						"          first_name as string,",
+						"          last_name as string,",
+						"          gender as string,",
+						"          departement as string",
+						"     ),",
+						"     partitionFileNames:['Autres.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink7"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pipelineEmploye')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1310,6 +1591,9 @@
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "DataFlow"
 				},
 				"annotations": []
 			},
@@ -1359,10 +1643,70 @@
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
+				"folder": {
+					"name": "DataFlow"
+				},
 				"annotations": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/Join_Empl_Dep_GroupBy')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_SplitCondional')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "JointureEmpl_Dep_CondionalSplit",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"ListeEmployes": {},
+									"ListeDepartements": {},
+									"sink1": {},
+									"sink2": {},
+									"sink3": {},
+									"sink4": {},
+									"sink5": {},
+									"sink6": {},
+									"sink7": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "DataFlow"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/JointureEmpl_Dep_CondionalSplit')]"
 			]
 		}
 	]
