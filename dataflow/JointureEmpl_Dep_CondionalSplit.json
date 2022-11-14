@@ -1,0 +1,224 @@
+{
+	"name": "JointureEmpl_Dep_CondionalSplit",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "InputListeEmployes",
+						"type": "DatasetReference"
+					},
+					"name": "ListeEmployes"
+				},
+				{
+					"dataset": {
+						"referenceName": "InoutListeDepartements",
+						"type": "DatasetReference"
+					},
+					"name": "ListeDepartements"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "OutputEployes",
+						"type": "DatasetReference"
+					},
+					"name": "sink1",
+					"rejectedDataLinkedService": {
+						"referenceName": "LinkedService_BlobStorage",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "OutputEployes",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				},
+				{
+					"dataset": {
+						"referenceName": "OutputEployes",
+						"type": "DatasetReference"
+					},
+					"name": "sink3"
+				},
+				{
+					"dataset": {
+						"referenceName": "OutputEployes",
+						"type": "DatasetReference"
+					},
+					"name": "sink4"
+				},
+				{
+					"dataset": {
+						"referenceName": "OutputEployes",
+						"type": "DatasetReference"
+					},
+					"name": "sink5"
+				},
+				{
+					"dataset": {
+						"referenceName": "OutputEployes",
+						"type": "DatasetReference"
+					},
+					"name": "sink6"
+				},
+				{
+					"dataset": {
+						"referenceName": "OutputEployes",
+						"type": "DatasetReference"
+					},
+					"name": "sink7"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "selectColonnes"
+				},
+				{
+					"name": "split1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id as string,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          gender as string,",
+				"          departement as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ListeEmployes",
+				"source(output(",
+				"          iddep as string,",
+				"          NomDepartement as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ListeDepartements",
+				"ListeEmployes, ListeDepartements join(departement == iddep,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 select(mapColumn(",
+				"          id,",
+				"          first_name,",
+				"          last_name,",
+				"          gender,",
+				"          iddep,",
+				"          departement = NomDepartement",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectColonnes",
+				"selectColonnes split(equals(iddep,'1'),",
+				"     equals(iddep,'2'),",
+				"     equals(iddep,'3'),",
+				"     equals(iddep,'4'),",
+				"     equals(iddep,'5'),",
+				"     equals(iddep,'6'),",
+				"     disjoint: false) ~> split1@(Informatique, Comptabilite, Marketing, Finance, RH, Reseau, Autres)",
+				"split1@Informatique sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as string,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          gender as string,",
+				"          departement as string",
+				"     ),",
+				"     partitionFileNames:['Informatique.csv'],",
+				"     mapColumn(",
+				"          id,",
+				"          first_name,",
+				"          last_name,",
+				"          gender,",
+				"          departement",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink1",
+				"split1@Comptabilite sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as string,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          gender as string,",
+				"          departement as string",
+				"     ),",
+				"     partitionFileNames:['Comptabilite.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink2",
+				"split1@Marketing sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as string,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          gender as string,",
+				"          departement as string",
+				"     ),",
+				"     partitionFileNames:['Marketing.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink3",
+				"split1@Finance sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as string,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          gender as string,",
+				"          departement as string",
+				"     ),",
+				"     partitionFileNames:['Finance'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink4",
+				"split1@RH sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as string,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          gender as string,",
+				"          departement as string",
+				"     ),",
+				"     partitionFileNames:['RH.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink5",
+				"split1@Reseau sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as string,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          gender as string,",
+				"          departement as string",
+				"     ),",
+				"     partitionFileNames:['Reseau.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink6",
+				"split1@Autres sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as string,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          gender as string,",
+				"          departement as string",
+				"     ),",
+				"     partitionFileNames:['Autres.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink7"
+			]
+		}
+	}
+}
