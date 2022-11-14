@@ -36,42 +36,66 @@
 						"referenceName": "OutputEployes",
 						"type": "DatasetReference"
 					},
-					"name": "sink2"
+					"name": "sink2",
+					"rejectedDataLinkedService": {
+						"referenceName": "LinkedService_BlobStorage",
+						"type": "LinkedServiceReference"
+					}
 				},
 				{
 					"dataset": {
 						"referenceName": "OutputEployes",
 						"type": "DatasetReference"
 					},
-					"name": "sink3"
+					"name": "sink3",
+					"rejectedDataLinkedService": {
+						"referenceName": "LinkedService_BlobStorage",
+						"type": "LinkedServiceReference"
+					}
 				},
 				{
 					"dataset": {
 						"referenceName": "OutputEployes",
 						"type": "DatasetReference"
 					},
-					"name": "sink4"
+					"name": "sink4",
+					"rejectedDataLinkedService": {
+						"referenceName": "LinkedService_BlobStorage",
+						"type": "LinkedServiceReference"
+					}
 				},
 				{
 					"dataset": {
 						"referenceName": "OutputEployes",
 						"type": "DatasetReference"
 					},
-					"name": "sink5"
+					"name": "sink5",
+					"rejectedDataLinkedService": {
+						"referenceName": "LinkedService_BlobStorage",
+						"type": "LinkedServiceReference"
+					}
 				},
 				{
 					"dataset": {
 						"referenceName": "OutputEployes",
 						"type": "DatasetReference"
 					},
-					"name": "sink6"
+					"name": "sink6",
+					"rejectedDataLinkedService": {
+						"referenceName": "LinkedService_BlobStorage",
+						"type": "LinkedServiceReference"
+					}
 				},
 				{
 					"dataset": {
 						"referenceName": "OutputEployes",
 						"type": "DatasetReference"
 					},
-					"name": "sink7"
+					"name": "sink7",
+					"rejectedDataLinkedService": {
+						"referenceName": "LinkedService_BlobStorage",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
