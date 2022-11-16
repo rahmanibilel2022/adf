@@ -1,0 +1,91 @@
+{
+	"name": "CleEmpl_Dep",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "InputListeEmployes",
+						"type": "DatasetReference"
+					},
+					"name": "ListeEmployes"
+				},
+				{
+					"dataset": {
+						"referenceName": "InoutListeDepartements",
+						"type": "DatasetReference"
+					},
+					"name": "ListeDepartements"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "OutputEployes",
+						"type": "DatasetReference"
+					},
+					"name": "sink1",
+					"rejectedDataLinkedService": {
+						"referenceName": "LinkedService_BlobStorage",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "surrogateKey1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id as integer,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          gender as string,",
+				"          salaire as double,",
+				"          departement as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     preferredFractionalType: 'double') ~> ListeEmployes",
+				"source(output(",
+				"          iddep as string,",
+				"          NomDepartement as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ListeDepartements",
+				"ListeEmployes, ListeDepartements lookup(departement == iddep,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 keyGenerate(output(ID as long),",
+				"     startAt: 100L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"surrogateKey1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as string,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          gender as string,",
+				"          departement as string",
+				"     ),",
+				"     partitionFileNames:['LesEmployes.csv'],",
+				"     mapColumn(",
+				"          id = ListeEmployes@id,",
+				"          first_name,",
+				"          last_name,",
+				"          gender,",
+				"          departement",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
