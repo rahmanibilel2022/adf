@@ -1,0 +1,87 @@
+{
+	"name": "LookupEmpl_Dep_copy1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "InputListeEmployes",
+						"type": "DatasetReference"
+					},
+					"name": "ListeEmployes"
+				},
+				{
+					"dataset": {
+						"referenceName": "InoutListeDepartements",
+						"type": "DatasetReference"
+					},
+					"name": "ListeDepartements"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "OutputEployes",
+						"type": "DatasetReference"
+					},
+					"name": "sink1",
+					"rejectedDataLinkedService": {
+						"referenceName": "LinkedService_BlobStorage",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "selectColonnes"
+				},
+				{
+					"name": "exists1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id as string,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          gender as string,",
+				"          departement as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ListeEmployes",
+				"source(output(",
+				"          iddep as string,",
+				"          NomDepartement as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ListeDepartements",
+				"exists1 select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectColonnes",
+				"ListeEmployes exists(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     negate:false,",
+				"     broadcast: 'auto')~> exists1",
+				"selectColonnes sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as string,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          gender as string,",
+				"          departement as string",
+				"     ),",
+				"     partitionFileNames:['LesEmployes.csv'],",
+				"     mapColumn(",
+				"          id,",
+				"          first_name,",
+				"          last_name,",
+				"          gender,",
+				"          departement",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
