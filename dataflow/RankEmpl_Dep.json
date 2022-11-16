@@ -47,7 +47,7 @@
 				"          last_name as string,",
 				"          gender as string,",
 				"          salaire as double,",
-				"          departement as short",
+				"          departement as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
