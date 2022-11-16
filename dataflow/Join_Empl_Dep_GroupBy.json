@@ -69,7 +69,7 @@
 				"join1 aggregate(groupBy(iddep),",
 				"     NomDepartement = first(NomDepartement),",
 				"          TotalEmployes = count(id)) ~> GroupByDepart",
-				"GroupByDepart sort(asc(iddep, true),",
+				"GroupByDepart sort(asc(TotalEmployes, true),",
 				"     caseInsensitive: true,",
 				"     partitionLevel: true) ~> Trier",
 				"Trier sink(allowSchemaDrift: true,",
