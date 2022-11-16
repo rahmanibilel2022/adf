@@ -1,5 +1,5 @@
 {
-	"name": "LookupEmpl_Dep_copy1",
+	"name": "ExistsEmpl_Dep",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -60,7 +60,7 @@
 				"     ignoreNoFilesFound: false) ~> ListeDepartements",
 				"exists1 select(skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectColonnes",
-				"ListeEmployes exists(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"ListeEmployes, ListeDepartements exists(departement == iddep,",
 				"     negate:false,",
 				"     broadcast: 'auto')~> exists1",
 				"selectColonnes sink(allowSchemaDrift: true,",
