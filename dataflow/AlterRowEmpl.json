@@ -56,7 +56,9 @@
 				"          id,",
 				"          first_name,",
 				"          last_name,",
-				"          Gender = gender",
+				"          Gender = gender,",
+				"          Salaire = salaire,",
+				"          Departement = departement",
 				"     )) ~> sink1"
 			]
 		}
