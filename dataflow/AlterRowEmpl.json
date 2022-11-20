@@ -52,7 +52,7 @@
 				"     deletable:true,",
 				"     insertable:true,",
 				"     updateable:true,",
-				"     upsertable:false,",
+				"     upsertable:true,",
 				"     keys:['id'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
