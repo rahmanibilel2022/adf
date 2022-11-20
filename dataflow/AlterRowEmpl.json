@@ -38,7 +38,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> ListeEmployes",
-				"ListeEmployes alterRow(deleteIf(departement==1)) ~> alterRow1",
+				"ListeEmployes alterRow(insertIf(!isNull(id))) ~> alterRow1",
 				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
