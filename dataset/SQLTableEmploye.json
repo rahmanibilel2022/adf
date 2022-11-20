@@ -1,0 +1,44 @@
+{
+	"name": "SQLTableEmploye",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDBDemo",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "varchar"
+			},
+			{
+				"name": "first_name",
+				"type": "varchar"
+			},
+			{
+				"name": "last_name",
+				"type": "varchar"
+			},
+			{
+				"name": "Gender",
+				"type": "varchar"
+			},
+			{
+				"name": "Salaire",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 0
+			},
+			{
+				"name": "Departement",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Employes"
+		}
+	}
+}

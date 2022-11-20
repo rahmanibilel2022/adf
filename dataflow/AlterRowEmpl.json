@@ -12,24 +12,52 @@
 					"name": "ListeEmployes"
 				}
 			],
-			"sinks": [],
-			"transformations": [
+			"sinks": [
 				{
-					"name": "alterRow1"
+					"dataset": {
+						"referenceName": "SQLTableEmploye",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
 				}
 			],
+			"transformations": [],
 			"scriptLines": [
 				"source(output(",
-				"          id as string,",
+				"          id as short,",
 				"          first_name as string,",
 				"          last_name as string,",
 				"          gender as string,",
-				"          departement as string",
+				"          salaire as double,",
+				"          departement as integer",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> ListeEmployes",
-				"ListeEmployes alterRow() ~> alterRow1"
+				"ListeEmployes sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as string,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          Gender as string,",
+				"          Salaire as decimal(18,0),",
+				"          Departement as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          id,",
+				"          first_name,",
+				"          last_name,",
+				"          Gender = gender",
+				"     )) ~> sink1"
 			]
 		}
 	}
